@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🛡️ PhishBuster AI
 
 > AI-powered phishing detection Chrome Extension  
@@ -120,3 +121,6 @@ MIT License — free to use and modify!
 ---
 
 > Built with ❤️ by TechTitans for Haridwar University Tech Sangram 2026
+=======
+# phishbusterr
+>>>>>>> 9d2bdc1827d3495fd81aed114700c5a5095a2964
