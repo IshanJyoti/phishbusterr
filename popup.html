@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PhishBuster AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050a0e;
+      --surface: #0b1520;
+      --surface2: #0f1e2e;
+      --border: #1a3a5c;
+      --accent: #00d4ff;
+      --accent2: #00ff88;
+      --danger: #ff3d5a;
+      --warn: #ffb800;
+      --safe: #00ff88;
+      --text: #c8e6ff;
+      --muted: #4a7a9b;
+      --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+      --glow-safe: 0 0 20px rgba(0, 255, 136, 0.4);
+      --glow-danger: 0 0 20px rgba(255, 61, 90, 0.4);
+      --glow-warn: 0 0 20px rgba(255, 184, 0, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 400px;
+      min-height: 520px;
+      background: var(--bg);
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { position: relative; z-index: 1; padding: 16px; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), #0066ff);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: var(--glow);
+      animation: pulse-logo 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-logo {
+      0%, 100% { box-shadow: 0 0 10px rgba(0,212,255,0.3); }
+      50% { box-shadow: 0 0 25px rgba(0,212,255,0.7); }
+    }
+
+    .header-text h1 {
+      font-size: 18px; font-weight: 700; letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .header-text p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; color: var(--muted); letter-spacing: 1px;
+    }
+
+    .status-dot {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; color: var(--accent2);
+    }
+
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent2);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1; padding: 9px 6px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; transition: all 0.25s;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,102,255,0.1));
+      color: var(--accent);
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+
+    .tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.03); }
+
+    .panel { display: none !important; }
+    .panel.active { display: block !important; }
+
+    .input-group { margin-bottom: 12px; }
+
+    .input-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 6px; display: block;
+    }
+
+    .input-wrap { display: flex; gap: 8px; align-items: stretch; }
+
+    textarea, input[type="text"] {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      resize: none;
+    }
+
+    textarea { height: 90px; }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0,212,255,0.1);
+    }
+
+    textarea::placeholder, input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    .btn {
+      display: flex; align-items: center; justify-content: center;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #003d6b, #00294a);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      color: var(--accent);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,102,255,0.15));
+      box-shadow: var(--glow);
+      transform: translateY(-1px);
+    }
+
+    .btn:active { transform: translateY(0); }
+
+    .btn-full {
+      width: 100%; margin-top: 10px;
+      padding: 12px; font-size: 13px;
+    }
+
+    .btn-gmail {
+      background: linear-gradient(135deg, #1a0030, #0d001f);
+      border-color: #8b5cf6;
+      color: #a78bfa;
+    }
+
+    .btn-gmail:hover { box-shadow: 0 0 20px rgba(139,92,246,0.4); }
+
+    .result-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-top: 12px;
+      background: var(--surface);
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card.visible { display: block; }
+    .result-card.safe { border-color: var(--safe); background: linear-gradient(135deg, rgba(0,255,136,0.05), var(--surface)); box-shadow: var(--glow-safe); }
+    .result-card.danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(255,61,90,0.07), var(--surface)); box-shadow: var(--glow-danger); }
+    .result-card.warning { border-color: var(--warn); background: linear-gradient(135deg, rgba(255,184,0,0.06), var(--surface)); box-shadow: var(--glow-warn); }
+
+    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .result-icon { font-size: 22px; }
+
+    .result-title { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+    .result-card.safe .result-title { color: var(--safe); }
+    .result-card.danger .result-title { color: var(--danger); }
+    .result-card.warning .result-title { color: var(--warn); }
+
+    .result-score { margin-left: auto; font-family: 'Share Tech Mono', monospace; font-size: 22px; font-weight: bold; }
+    .result-card.safe .result-score { color: var(--safe); }
+    .result-card.danger .result-score { color: var(--danger); }
+    .result-card.warning .result-score { color: var(--warn); }
+
+    .result-body { font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 10px; }
+
+    .indicators { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .indicator {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; padding: 3px 8px;
+      border-radius: 20px; border: 1px solid;
+      letter-spacing: 0.5px;
+    }
+
+    .indicator.red { border-color: var(--danger); color: var(--danger); background: rgba(255,61,90,0.08); }
+    .indicator.yellow { border-color: var(--warn); color: var(--warn); background: rgba(255,184,0,0.08); }
+    .indicator.green { border-color: var(--safe); color: var(--safe); background: rgba(0,255,136,0.08); }
+    .indicator.blue { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
+
+    .loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; gap: 12px; }
+    .loading.visible { display: flex; }
+
+    .scan-ring {
+      width: 44px; height: 44px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: var(--accent);
+      letter-spacing: 2px;
+      animation: flicker 1.5s ease-in-out infinite;
+    }
+
+    @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .gmail-info {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .gmail-info span { color: var(--accent); }
+
+    .url-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+
+    .url-item {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+    }
+
+    .url-item .url-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+
+    .api-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .api-section h3 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+
+    .save-msg { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent2); margin-top: 6px; display: none; }
+
+    .footer {
+      margin-top: 14px; padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .footer-text { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .powered { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--muted); }
+    .powered span { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="logo">🛡</div>
+      <div class="header-text">
+        <h1>PhishBuster</h1>
+        <p>AI-POWERED THREAT DETECTION</p>
+      </div>
+      <div class="status-dot">
+        <div class="dot"></div>
+        ACTIVE
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-email">Email</button>
+      <button class="tab" id="tab-url">URL</button>
+      <button class="tab" id="tab-gmail">Gmail</button>
+      <button class="tab" id="tab-settings">Settings</button>
+    </div>
+
+    <!-- EMAIL PANEL -->
+    <div class="panel active" id="panel-email">
+      <div class="input-group">
+        <label class="input-label">// Paste email content below</label>
+        <textarea id="email-input" placeholder="Paste the suspicious email text here..."></textarea>
+      </div>
+      <button class="btn btn-full" id="btn-analyze">⚡ ANALYZE WITH AI</button>
+      <div class="loading" id="email-loading">
+        <div class="scan-ring"></div>
+        <div class="loading-text">SCANNING WITH AI...</div>
+      </div>
+      <div class="result-card" id="email-result">
+        <div class="result-header">
+          <div class="result-icon" id="email-icon">⚠️</div>
+          <div class="result-title" id="email-verdict">ANALYZING...</div>
+          <div class="result-score" id="email-score">--</div>
+        </div>
+        <div class="result-body" id="email-explanation"></div>
+        <div class="indicators" id="email-indicators"></div>
+      </div>
+    </div>
+
+    <!-- URL PANEL -->
+    <div class="panel" id="panel-url">
+      <div class="input-group">
+        <label class="input-label">// Enter URL to inspect</label>
+        <div class="input-wrap">
+          <input type="text" id="url-input" placeholder="https://suspicious-link.com/login" />
+          <button class="btn" id="btn-scan-url">SCAN</button>
+        </div>
+      </div>
+      <div class="loading" id="url-loading">
+        <div class="scan-ring"></div>
+        <div class="loading-text">CHECKING URL...</div>
+      </div>
+      <div class="result-card" id="url-result">
+        <div class="result-header">
+          <div class="result-icon" id="url-icon">🔗</div>
+          <div class="result-title" id="url-verdict">CHECKING...</div>
+          <div class="result-score" id="url-score">--</div>
+        </div>
+        <div class="result-body" id="url-explanation"></div>
+        <div class="indicators" id="url-indicators"></div>
+      </div>
+    </div>
+
+    <!-- GMAIL PANEL -->
+    <div class="panel" id="panel-gmail">
+      <div class="gmail-info">
+        STATUS: <span id="gmail-status">NOT ON GMAIL</span><br/>
+        EMAILS SCANNED: <span id="gmail-count">0</span><br/>
+        THREATS DETECTED: <span id="gmail-threats">0</span>
+      </div>
+      <button class="btn btn-full btn-gmail" id="btn-scan-gmail">📬 SCAN CURRENT EMAIL</button>
+      <div class="loading" id="gmail-loading">
+        <div class="scan-ring"></div>
+        <div class="loading-text">READING GMAIL...</div>
+      </div>
+      <div class="result-card" id="gmail-result">
+        <div class="result-header">
+          <div class="result-icon" id="gmail-icon">📬</div>
+          <div class="result-title" id="gmail-verdict">SCANNING...</div>
+          <div class="result-score" id="gmail-score">--</div>
+        </div>
+        <div class="result-body" id="gmail-explanation"></div>
+        <div class="indicators" id="gmail-indicators"></div>
+      </div>
+      <div class="url-list" id="gmail-urls"></div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+<div class="panel" id="panel-settings">
+  <div class="api-section">
+    <h3>// Claude API Key</h3>
+    <div class="input-wrap">
+      <input type="text" id="api-key-input" placeholder="sk-ant-api03-..." />
+      <button class="btn" id="btn-save-api">SAVE</button>
+    </div>
+    <div class="save-msg" id="save-msg">✓ KEY SAVED</div>
+  </div>
+  <div class="api-section">
+    <h3>// Google Safe Browsing Key</h3>
+    <div class="input-wrap">
+      <input type="text" id="gsb-key-input" placeholder="AIza..." />
+      <button class="btn" id="btn-save-gsb">SAVE</button>
+    </div>
+    <div class="save-msg" id="gsb-save-msg">✓ KEY SAVED</div>
+  </div>
+  <div class="api-section">
+    <h3>// ML Model Backend URL</h3>
+    <div class="input-wrap">
+      <input type="text" id="ml-url-input" placeholder="http://localhost:5000" />
+      <button class="btn" id="btn-save-ml">SAVE</button>
+    </div>
+    <div class="save-msg" id="ml-save-msg">✓ URL SAVED</div>
+  </div>
+</div>
+  
+
+    <div class="footer">
+      <div class="footer-text">PHISHBUSTER AI v1.0.0</div>
+      <div class="powered">POWERED BY <span>TECH TIANS</span></div>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

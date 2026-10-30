@@ -1,0 +1,4 @@
+ml-model/phishing_dataset.csv
+ml-model/model.pkl
+ml-model/__pycache__/
+*.pyc
