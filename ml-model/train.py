@@ -59,12 +59,36 @@ def preprocess_text(text):
     return text.strip()
 
 
+
 def train_model(df):
     print("Dataset size:", len(df))
-    print("Label counts:\n", df['label'].value_counts())
+    print("Available columns:", df.columns.tolist())
 
-    X = df['text_combined'].apply(preprocess_text)
+    # Identify the text column
+    if 'text_combined' in df.columns:
+        text_column = 'text_combined'
+    elif 'text' in df.columns:
+        text_column = 'text'
+    else:
+        raise ValueError(
+            "Dataset must contain either 'text' or 'text_combined' column."
+        )
+
+    # Identify the label column
+    if 'label' not in df.columns:
+        raise ValueError("Dataset must contain a 'label' column.")
+
+    # Clean the dataset
+    df = df[[text_column, 'label']].dropna().copy()
+    df[text_column] = df[text_column].apply(preprocess_text)
+
+    X = df[text_column]
     y = df['label']
+
+    print("\nLabel counts:\n", y.value_counts())
+
+    if y.nunique() != 2:
+        raise ValueError("Training requires exactly two classes: safe and phishing.")
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
@@ -90,11 +114,15 @@ def train_model(df):
     pipeline.fit(X_train, y_train)
 
     y_pred = pipeline.predict(X_test)
+
     print("\nAccuracy:", accuracy_score(y_test, y_pred))
-    print("\nReport:")
-    print(classification_report(y_test, y_pred, target_names=['Safe', 'Phishing']))
+    print("\nClassification Report:")
+    print(classification_report(
+        y_test, y_pred, target_names=['Safe', 'Phishing']
+    ))
 
     return pipeline
+
 
 
 def save_model(pipeline, path='model.pkl'):
