@@ -2,12 +2,6 @@
 # 🛡️ PhishBuster AI
 
 > AI-powered phishing detection Chrome Extension  
-> Built by **TechTitans** 🏆
-
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Accuracy](https://img.shields.io/badge/ML%20Accuracy-98%25-green)
-![License](https://img.shields.io/badge/license-MIT-orange)
-
 ---
 
 ## 🚀 What is PhishBuster AI?
@@ -53,19 +47,13 @@ PhishBuster AI is a Chrome Extension that uses **Artificial Intelligence** and *
 ---
 
 ## 🔧 Installation
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/PhishBuster-AI.git
-```
-
-### 2. Load Chrome Extension
+### 1. Load Chrome Extension
 1. Open Chrome → go to `chrome://extensions/`
 2. Turn on **Developer Mode**
 3. Click **Load unpacked**
 4. Select the `PhishBuster-AI` folder
 
-### 3. Set up ML Backend
+### 2. Set up ML Backend
 ```bash
 cd ml-model
 pip install -r requirements.txt
@@ -73,7 +61,7 @@ python train.py
 python server.py
 ```
 
-### 4. Add API Keys
+### 3. Add API Keys
 - Open extension → Settings tab
 - Add your **Groq API key** (get free at console.groq.com)
 - Add ML Backend URL: `http://localhost:5000`
@@ -93,34 +81,3 @@ User Input (Email/URL)
 Result: SAFE ✅ / SUSPICIOUS ⚠️ / PHISHING 🚨
 ```
 
----
-
-## 👥 Team TechTitans
-
-| Name | Role |
-|------|------|
-| Arnav Tiwari | Lead Developer |
-| Kartik Saini | ML and UI/UX Engineer|
-
-
----
-
-## 📸 Screenshots
-
-![Main UI](screenshots/main.png)
-![Phishing Detected](screenshots/phishing.png)
-![URL Scanner](screenshots/url.png)
-![Safe Email](screenshots/safe.png)
-
----
-
-## 📜 License
-
-MIT License — free to use and modify!
-
----
-
-> Built with ❤️ by TechTitans for Haridwar University Tech Sangram 2026
-=======
-# phishbusterr
->>>>>>> 9d2bdc1827d3495fd81aed114700c5a5095a2964
